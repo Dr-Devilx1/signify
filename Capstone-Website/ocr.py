@@ -9,7 +9,27 @@ import cv2
 import os
 import numpy as np
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Pagal\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+import shutil
+
+# Try to find tesseract in PATH, or fallback to common Windows locations
+tesseract_cmd = shutil.which("tesseract")
+if not tesseract_cmd:
+    # Common installation paths for Windows
+    fallbacks = [
+        r'C:\Program Files\Tesseract-OCR\tesseract.exe',
+        r'C:\Users\Pagal\AppData\Local\Programs\Tesseract-OCR\tesseract.exe',
+        os.path.expandvars(r'%LOCALAPPDATA%\Programs\Tesseract-OCR\tesseract.exe'),
+    ]
+    for path in fallbacks:
+        if os.path.exists(path):
+            tesseract_cmd = path
+            break
+
+if tesseract_cmd:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+else:
+    print("Warning: Tesseract OCR not found. Please install it to use OCR features.")
+
 
 # Simple image to string
 # print(pytesseract.image_to_string(Image.open('Cheque083654.jpg')))

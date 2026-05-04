@@ -18,12 +18,10 @@
   <body>
 
     <header>
-      <div class="container">
-        <img
-          class="logo-img"
-          src="{{url_for('static', filename='images/tiet-logo.jpg')}}"
-        />
-        <h1 class="logo">e-Signify</h1>
+      <div class="container text-center py-4">
+        <h1 class="logo display-4 fw-bold">Signify</h1>
+        <p class="lead">Automatic Signature Verification System</p>
+
 
         <strong>
           <div class="row">
@@ -138,6 +136,9 @@
     </header>
 
 
-    <!-- {% block content %} {% endblock %} -->
+    <main class="container">
+        {% block content %} {% endblock %}
+    </main>
+
   </body>
 </html>

@@ -65,7 +65,7 @@ The final interface:
 ![userInterface.png](Project_Images/user_interface.png)
 
 
-> Note: This is our `Final Year project` at **Thapar Institute of Engineering and Technology.**
+> Project developed by **Mahad**.
 
-For Declaration letter [check](./Declaration.txt)
+
 

@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Flask Tutorial</title>
-  </head>
-  <body>
-    {% extends "template.html" %} {% block content %}
+{% extends "template.html" %}
 
-
-
-    <h1>Home Page</h1>
-    <p>Will contain two options (verification and detection)</p>
-
-    {% endblock %}
-  </body>
-</html>
+{% block content %}
+<div class="container text-center mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="mb-4">Welcome to Signify</h2>
+        <p class="lead text-muted">Upload a cheque image below to verify the authenticity of the signature using our OCR and Machine Learning model.</p>
+        
+        <div class="alert alert-info" role="alert">
+            Please ensure the cheque image is clear and the signature is clearly visible.
+        </div>
+    </div>
+</div>
+{% endblock %}
