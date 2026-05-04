@@ -9,7 +9,7 @@ import cv2
 import os
 import numpy as np
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Pagal\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
 # Simple image to string
 # print(pytesseract.image_to_string(Image.open('Cheque083654.jpg')))

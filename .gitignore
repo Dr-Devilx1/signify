@@ -3,12 +3,7 @@ Code_Directory/Detection_Phase/OCR/OCR_Results
 Code_Directory/Detection_Phase/Line Sweep/LineSweep_Results
 Code_Directory/Detection_Phase/Connected Components/ConnectedComponents_Results
 Code_Directory/Detection_Phase/OCR/Data
-Capstone-Website/static/uploads/*
-Capstone-Website/static/OCR_Results/*
-Capstone-Website/static/LineSweep_Results/*
-!Capstone-Website/static/uploads/.gitkeep
-!Capstone-Website/static/OCR_Results/.gitkeep
-!Capstone-Website/static/LineSweep_Results/.gitkeep
+Capstone-Website/static/uploads
 Our_Dataset/Testing
 
 # Byte-compiled / optimized / DLL files
