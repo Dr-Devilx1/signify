@@ -1,101 +1,91 @@
-from flask import Flask
-import pickle
-from flask import render_template
+import os
+from flask import Flask, render_template, flash, request, redirect
+from werkzeug.utils import secure_filename
 import ocr
 import lineSweep
 import svm
 
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+OCR_RESULTS_FOLDER = os.path.join(BASE_DIR, "static", "OCR_Results")
+LINESWEEP_RESULTS_FOLDER = os.path.join(BASE_DIR, "static", "LineSweep_Results")
+
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-model = pickle.load(open('../Code_Directory/Verification_Phase/SVM/model.pkl','rb'))
-
-from flask import render_template, flash, request, redirect, url_for
-from werkzeug.utils import secure_filename
-import urllib.request
-import os
-app = Flask(__name__)
-UPLOAD_FOLDER = 'static/uploads'
-app.config['SECRET_KEY'] = 'asldfkjlj'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def ensure_runtime_dirs():
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    os.makedirs(OCR_RESULTS_FOLDER, exist_ok=True)
+    os.makedirs(LINESWEEP_RESULTS_FOLDER, exist_ok=True)
 
-@app.route('/')
+
+def clear_directory(path):
+    if not os.path.isdir(path):
+        return
+    for name in os.listdir(path):
+        file_path = os.path.join(path, name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+
+ensure_runtime_dirs()
+
+
+@app.route("/")
 def home():
-    return render_template('home.html')
+    return render_template("home.html")
 
 
-
-@app.route('/reload')
+@app.route("/reload")
 def reload_page():
-    dir1 = 'static/uploads'
-    dir2 = 'static/OCR_Results'
-    dir3 = 'static/LineSweep_Results'
-    for f in os.listdir(dir1):
-        os.remove(os.path.join(dir1, f))
-
-    for f in os.listdir(dir2):
-        os.remove(os.path.join(dir2, f))
-
-    for f in os.listdir(dir3):
-        os.remove(os.path.join(dir3, f))
-    return redirect('/')
+    clear_directory(app.config["UPLOAD_FOLDER"])
+    clear_directory(OCR_RESULTS_FOLDER)
+    clear_directory(LINESWEEP_RESULTS_FOLDER)
+    return redirect("/")
 
 
-@app.route('/process_ocr', methods=['POST'])
+@app.route("/process_ocr", methods=["POST"])
 def process_image():
-    # res = ocr.ocr_algo()
-    # lineSweep.lineSweep_algo()
+    # Run full pipeline before verification so fresh clones work end-to-end.
+    ocr.ocr_algo()
+    lineSweep.lineSweep_algo()
     result = svm.svm_algo()
 
-    # flash("Algorithm successfully completed for IFSC Code : " + res)
+    if result == "No test images":
+        return render_template("home.html", result="No processed signature found")
     if result == "Genuine":
-        ret = "Genuine Signature"
-        return render_template("home.html", result=ret)
-    else:
-        ret = "Forged Signature"
-        return render_template("home.html", result=ret)
-
-    # return redirect('/')
+        return render_template("home.html", result="Genuine Signature")
+    return render_template("home.html", result="Forged Signature")
 
 
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=["POST"])
 def upload_image():
-    if 'file' not in request.files:
-        flash('No file part')
+    if "file" not in request.files:
+        flash("No file part")
         return redirect(request.url)
 
-    file = request.files['file']
-    # print(file)
-    if file.filename == '':
-        flash('No image selected for uploading')
+    file = request.files["file"]
+    if file.filename == "":
+        flash("No image selected for uploading")
         return redirect(request.url)
     if file and allowed_file(file.filename):
+        ensure_runtime_dirs()
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # print('upload_image filename: ' + filename)
-        flash('Image successfully uploaded')
-        return render_template('home.html', filename=filename)
-    else:
-        flash('Allowed image types are - png, jpg, jpeg, gif')
-        return redirect(request.url)
-
-# @app.route("/about")
-# def about():
-#     return render_template("about.html")
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        flash("Image successfully uploaded")
+        return render_template("home.html", filename=filename)
+    flash("Allowed image types are - png, jpg, jpeg, gif")
+    return redirect(request.url)
 
 
-# @app.route("/upload", methods=['GET', 'POST'])
-# def upload_image():
-#     return render_template('upload.html')
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

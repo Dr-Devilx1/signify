@@ -32,6 +32,19 @@ The `Signature_Detection` folder contains code implementations for various signa
    * LineSweep Algorithm - `make run-linesweep` <br>
    * Connected Components - `make run-connected`
 
+## GitHub and Deployment Notes
+
+- This project is a Flask backend and **will not run on GitHub Pages** (GitHub Pages supports static sites only).
+- To run the web app after cloning, use the `Capstone-Website` app:
+  1. `pip install -r Capstone-Website/requirements.txt`
+  2. `cd Capstone-Website`
+  3. `python app.py`
+- Runtime folders are required and now included with `.gitkeep` files:
+  - `Capstone-Website/static/uploads`
+  - `Capstone-Website/static/OCR_Results`
+  - `Capstone-Website/static/LineSweep_Results`
+- If you deploy online, use a Python host such as Render, Railway, or PythonAnywhere.
+
 ## Code Walkthrough
 
 ### Traning and Model Code
